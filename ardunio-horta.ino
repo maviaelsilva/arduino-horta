@@ -12,8 +12,8 @@ int currentPowerOnCount = 0;
 int currentPowerOffCount = 0;
 
 const long interval = 1; // intervalo de coleta em segundos
-const int intervalPowerOnRele = 60 * 10; // intervalo power on rele
-const int intervalPowerOffRele = 60 * 60 * 3; // intervalo power off rele
+const int intervalPowerOnRele = 10; //60 * 10; // intervalo power on rele
+const int intervalPowerOffRele = 30; //60 * 60 * 3; // intervalo power off rele
 
 
 void setup() {
@@ -28,15 +28,21 @@ void loop() {
   ///ler o valor do LDR
   ldrValor = analogRead(ldrPin); //O valor lido será entre 0 e 1023
   if (ldrValor>= 900)
-    envLightState = HIGH;
+    envLightState = LOW;
   else
-    envLightState = LOW;    // senão, apaga o led e relé
+    envLightState = HIGH;    // senão, apaga o led e relé
 
   Serial.print("luz envLightState: ");
   Serial.print(envLightState);
+  Serial.print(", ldrValor: ");
+  Serial.print(ldrValor);
   Serial.println();
   if(currentPowerOnCount >= intervalPowerOnRele){
-    Serial.println("ligado");
+    Serial.print("Ligado, currentPowerOffCount: ");
+    Serial.print(currentPowerOffCount);
+    Serial.print(", intervalPowerOffRele: ");
+    Serial.print(intervalPowerOffRele);
+    Serial.println();
     //se o valor lido for maior que 500, liga o led e o rele
 
     //aciona os dois reles
@@ -53,14 +59,11 @@ void loop() {
     Serial.print(intervalPowerOnRele);
     Serial.println();
      //aciona os dois reles
-    digitalWrite(ledPinRele1, HIGH);
-    digitalWrite(ledPinRele2, HIGH);
+    digitalWrite(ledPinRele1, LOW);
+    digitalWrite(ledPinRele2, LOW);
     currentPowerOffCount = 0;
     currentPowerOnCount++;
   }
-  
-  //imprime o valor lido do LDR no monitor serial
-  Serial.println(ldrValor);
   
   //aguarda alguns segundos
   delay(interval * 1000);
