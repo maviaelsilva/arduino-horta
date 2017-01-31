@@ -12,8 +12,8 @@ int currentPowerOnCount = 0;
 int currentPowerOffCount = 0;
 
 const long interval = 1; // intervalo de coleta em segundos
-const int intervalPowerOnRele = 10; //60 * 10; // intervalo power on rele
-const int intervalPowerOffRele = 30; //60 * 60 * 3; // intervalo power off rele
+const int intervalPowerOnRele = 60 * 10; // intervalo power on rele
+const int intervalPowerOffRele = 60 * 60 * 3; // intervalo power off rele
 
 
 void setup() {
@@ -27,10 +27,10 @@ void setup() {
 void loop() {
   ///ler o valor do LDR
   ldrValor = analogRead(ldrPin); //O valor lido será entre 0 e 1023
-  if (ldrValor>= 900)
-    envLightState = LOW;
+  if (ldrValor >= 900)
+    envLightState = HIGH;
   else
-    envLightState = HIGH;    // senão, apaga o led e relé
+    envLightState = LOW;    // senão, apaga o led e relé
 
   Serial.print("luz envLightState: ");
   Serial.print(envLightState);
@@ -38,7 +38,7 @@ void loop() {
   Serial.print(ldrValor);
   Serial.println();
   if(currentPowerOnCount >= intervalPowerOnRele){
-    Serial.print("Ligado, currentPowerOffCount: ");
+    Serial.print("Desligado, currentPowerOffCount: ");
     Serial.print(currentPowerOffCount);
     Serial.print(", intervalPowerOffRele: ");
     Serial.print(intervalPowerOffRele);
@@ -46,21 +46,21 @@ void loop() {
     //se o valor lido for maior que 500, liga o led e o rele
 
     //aciona os dois reles
-    digitalWrite(ledPinRele1, envLightState);
-    digitalWrite(ledPinRele2, envLightState);
+    digitalWrite(ledPinRele1, HIGH);
+    digitalWrite(ledPinRele2, HIGH);
     //delay(intervalPowerOnRele * 1000);
     if(currentPowerOffCount >= intervalPowerOffRele)
       currentPowerOnCount = 0;
     currentPowerOffCount++; 
   }else{
-    Serial.print("Desligado, currentPowerOnCount: ");
+    Serial.print("Ligado, currentPowerOnCount: ");
     Serial.print(currentPowerOnCount);
     Serial.print(", intervalPowerOnRele: ");
     Serial.print(intervalPowerOnRele);
     Serial.println();
      //aciona os dois reles
-    digitalWrite(ledPinRele1, LOW);
-    digitalWrite(ledPinRele2, LOW);
+    digitalWrite(ledPinRele1, envLightState);
+    digitalWrite(ledPinRele2, envLightState);
     currentPowerOffCount = 0;
     currentPowerOnCount++;
   }
